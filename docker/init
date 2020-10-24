@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -eu
+
+if ! test -x "$1"; then
+	SH=$(which "$1")
+	shift
+	set -- $SH "$@"
+fi
+if [ $# -eq 1 ] && grep -q -e "^$1\$" /etc/shells; then
+	SH=$1
+	shift
+	set -- $SH -l "$@"
+else
+	set -- /bin/bash -l -c 'exec "$@"' -- "$@"
+fi
+
+HOME=/home/kx
+cd $HOME
+
+#export QLIC=$HOME
+#chpst -u kx /bin/sh -l -c 'exec python /opt/kx/kc.lic.py'
+
+exec chpst -u kx "$@"
